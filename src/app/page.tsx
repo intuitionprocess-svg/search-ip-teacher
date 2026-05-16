@@ -1,250 +1,41 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import type { TeacherResult } from './api/search/route';
+import { useState } from 'react';
+import TeacherSearch from '@/components/TeacherSearch';
+import CourseFinder from '@/components/CourseFinder';
 
-const RADIUS_OPTIONS = [10, 25, 50, 100, 200];
-
-function MapPinIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-      <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.07-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-2.013 3.5-4.667 3.5-7.827a8 8 0 10-16 0c0 3.16 1.556 5.814 3.5 7.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-    </svg>
-  );
-}
-
-function PhoneIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-      <path fillRule="evenodd" d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 006.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5z" clipRule="evenodd" />
-    </svg>
-  );
-}
-
-function EmailIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-      <path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z" />
-      <path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z" />
-    </svg>
-  );
-}
+type Tab = 'teacher' | 'course';
 
 export default function Home() {
-  const [cityState, setCityState] = useState('');
-  const [zip, setZip] = useState('');
-  const [radius, setRadius] = useState(25);
-  const [results, setResults] = useState<TeacherResult[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [searched, setSearched] = useState(false);
-  const resultsRef = useRef<HTMLDivElement>(null);
-
-  // Zip is more precise — prefer it if provided, else fall back to city/state
-  const location = zip.trim() || cityState.trim();
-
-  async function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    if (!location) {
-      setError('Please enter a zip code or a city and state.');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    setSearched(false);
-
-    try {
-      const res = await fetch('/api/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ location, radius }),
-      });
-
-      const data = await res.json() as { teachers?: TeacherResult[]; error?: string };
-
-      if (!res.ok || data.error) {
-        setError(data.error ?? 'Something went wrong.');
-        setResults([]);
-      } else {
-        setResults(data.teachers ?? []);
-        setSearched(true);
-        setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-      }
-    } catch {
-      setError('Network error — please check your connection and try again.');
-    } finally {
-      setLoading(false);
-    }
-  }
+  const [tab, setTab] = useState<Tab>('teacher');
 
   return (
-    <main className="min-h-screen bg-amber-50">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-orange-600 to-amber-500 text-white py-12 px-4 text-center shadow-md">
-        <h1 className="text-4xl font-bold tracking-tight mb-2">Find an IP Teacher</h1>
-        <p className="text-orange-100 text-lg">
-          Discover Intuition Process teachers near you
-        </p>
+    <main className="min-h-screen bg-[#fdf4ef]">
+      <header className="bg-gradient-to-r from-orange-600 to-amber-500 text-white py-10 px-4 text-center shadow-md">
+        <h1 className="text-4xl font-bold tracking-tight mb-1">Intuition Process</h1>
+        <p className="text-orange-100 text-lg">Find teachers and courses near you</p>
       </header>
 
-      {/* Search form */}
-      <section className="max-w-lg mx-auto mt-10 px-4">
-        <form
-          onSubmit={handleSearch}
-          className="bg-white rounded-2xl shadow-lg p-7 flex flex-col gap-5"
-        >
-          {/* City + State */}
-          <div>
-            <label htmlFor="cityState" className="block text-sm font-semibold text-gray-700 mb-1">
-              City &amp; State
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
-                <MapPinIcon />
-              </span>
-              <input
-                id="cityState"
-                type="text"
-                value={cityState}
-                onChange={(e) => setCityState(e.target.value)}
-                placeholder="e.g. Denver, CO"
-                className="w-full border border-gray-300 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          {/* OR divider */}
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">or</span>
-            <div className="flex-1 h-px bg-gray-200" />
-          </div>
-
-          {/* Zip */}
-          <div>
-            <label htmlFor="zip" className="block text-sm font-semibold text-gray-700 mb-1">
-              Zip Code
-            </label>
-            <input
-              id="zip"
-              type="text"
-              inputMode="numeric"
-              maxLength={5}
-              value={zip}
-              onChange={(e) => setZip(e.target.value.replace(/\D/g, ''))}
-              placeholder="e.g. 80132"
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="radius" className="block text-sm font-semibold text-gray-700 mb-1">
-              Search Radius
-            </label>
-            <select
-              id="radius"
-              value={radius}
-              onChange={(e) => setRadius(Number(e.target.value))}
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+      {/* Tab bar */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="flex">
+          {(['teacher', 'course'] as Tab[]).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-8 py-3.5 text-sm font-semibold border-b-2 transition-colors ${
+                tab === t
+                  ? 'border-[#e8784a] text-[#e8784a]'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
             >
-              {RADIUS_OPTIONS.map((r) => (
-                <option key={r} value={r}>
-                  Within {r} miles
-                </option>
-              ))}
-            </select>
-          </div>
+              {t === 'teacher' ? 'Find a Teacher' : 'Find a Course'}
+            </button>
+          ))}
+        </div>
+      </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-orange-600 hover:bg-orange-700 active:bg-orange-800 disabled:opacity-60 text-white font-semibold py-2.5 px-6 rounded-xl transition-colors"
-          >
-            {loading ? 'Searching…' : 'Search for Teachers'}
-          </button>
-        </form>
-
-        {/* Error message */}
-        {error && (
-          <div className="mt-4 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
-            {error}
-          </div>
-        )}
-      </section>
-
-      {/* Results */}
-      {searched && (
-        <section ref={resultsRef} className="max-w-lg mx-auto mt-8 px-4 pb-16">
-          <p className="text-sm text-gray-500 mb-4">
-            {results.length === 0
-              ? `No teachers found within ${radius} miles. Try expanding your radius.`
-              : `${results.length} teacher${results.length !== 1 ? 's' : ''} found within ${radius} miles`}
-          </p>
-
-          <div className="flex flex-col gap-4">
-            {results.map((teacher, i) => (
-              <div
-                key={i}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow"
-              >
-                {/* Name + distance badge */}
-                <div className="flex justify-between items-start gap-2">
-                  <h2 className="font-semibold text-gray-900 text-lg leading-tight">
-                    {teacher.firstName} {teacher.lastName}
-                  </h2>
-                  <span className="shrink-0 text-xs font-medium bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full">
-                    {teacher.distance} mi
-                  </span>
-                </div>
-
-                {/* Location */}
-                <p className="flex items-center gap-1.5 text-gray-500 text-sm mt-1.5">
-                  <MapPinIcon />
-                  {teacher.city}, {teacher.state} {teacher.zip}
-                </p>
-
-                {/* Contact info */}
-                <div className="mt-3 flex flex-col gap-1.5">
-                  {teacher.phone && (
-                    <a
-                      href={`tel:${teacher.phone}`}
-                      className="flex items-center gap-1.5 text-orange-600 text-sm hover:text-orange-800 hover:underline"
-                    >
-                      <PhoneIcon />
-                      {teacher.phone}
-                    </a>
-                  )}
-                  {teacher.email && (
-                    <a
-                      href={`mailto:${teacher.email}`}
-                      className="flex items-center gap-1.5 text-orange-600 text-sm hover:text-orange-800 hover:underline"
-                    >
-                      <EmailIcon />
-                      {teacher.email}
-                    </a>
-                  )}
-                </div>
-
-                {/* RTC / Timezone chips */}
-                {(teacher.rtc || teacher.timezone) && (
-                  <div className="mt-3 flex gap-2 flex-wrap">
-                    {teacher.rtc && (
-                      <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full">
-                        RTC: {teacher.rtc}
-                      </span>
-                    )}
-                    {teacher.timezone && (
-                      <span className="text-xs bg-gray-50 text-gray-500 border border-gray-200 px-2 py-0.5 rounded-full">
-                        {teacher.timezone}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      {tab === 'teacher' ? <TeacherSearch /> : <CourseFinder />}
     </main>
   );
 }
