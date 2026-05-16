@@ -9,7 +9,7 @@ const YOUTH_CTYPES =
   '1517984,1535152,1566804,1603578,1565382,565382,1517989,1559626,1559254,' +
   '1565006,1566803';
 
-export const IP_CTYPES: Record<string, string> = {
+const IP_CTYPES: Record<string, string> = {
   '1517975': 'Intuition Process Juniors (ages 5–7)',
   '1517983': 'Intuition Process Kids (ages 8–12)',
   '1517984': 'Intuition Process Teens (ages 13–17)',
