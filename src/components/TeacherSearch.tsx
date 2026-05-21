@@ -38,6 +38,7 @@ export default function TeacherSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searched, setSearched] = useState(false);
+  const [isStateSearch, setIsStateSearch] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const location = zip.trim() || cityState.trim();
@@ -59,13 +60,14 @@ export default function TeacherSearch() {
         body: JSON.stringify({ location, radius }),
       });
 
-      const data = await res.json() as { teachers?: TeacherResult[]; error?: string };
+      const data = await res.json() as { teachers?: TeacherResult[]; error?: string; stateSearch?: boolean };
 
       if (!res.ok || data.error) {
         setError(data.error ?? 'Something went wrong.');
         setResults([]);
       } else {
         setResults(data.teachers ?? []);
+        setIsStateSearch(data.stateSearch ?? false);
         setSearched(true);
         setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
       }
@@ -160,8 +162,12 @@ export default function TeacherSearch() {
         <section ref={resultsRef} className="max-w-lg mx-auto mt-8 px-4 pb-16">
           <p className="text-sm text-gray-500 mb-4">
             {results.length === 0
-              ? `No teachers found within ${radius} miles. Try expanding your radius.`
-              : `${results.length} teacher${results.length !== 1 ? 's' : ''} found within ${radius} miles`}
+              ? isStateSearch
+                ? `No teachers found in that state.`
+                : `No teachers found within ${radius} miles. Try expanding your radius.`
+              : isStateSearch
+                ? `${results.length} teacher${results.length !== 1 ? 's' : ''} found`
+                : `${results.length} teacher${results.length !== 1 ? 's' : ''} found within ${radius} miles`}
           </p>
 
           <div className="flex flex-col gap-4">
@@ -174,9 +180,11 @@ export default function TeacherSearch() {
                   <h2 className="font-semibold text-gray-900 text-lg leading-tight">
                     {teacher.firstName} {teacher.lastName}
                   </h2>
-                  <span className="shrink-0 text-xs font-medium bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full">
-                    {teacher.distance} mi
-                  </span>
+                  {!isStateSearch && (
+                    <span className="shrink-0 text-xs font-medium bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full">
+                      {teacher.distance} mi
+                    </span>
+                  )}
                 </div>
 
                 <p className="flex items-center gap-1.5 text-gray-500 text-sm mt-1.5">
