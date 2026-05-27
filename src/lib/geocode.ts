@@ -36,9 +36,11 @@ export async function geocodeUserInput(input: string): Promise<Coordinates | nul
     if (coords) return coords;
   }
 
+  // Append ", USA" if not already present to bias results toward the US
+  const query = /usa|united states/i.test(trimmed) ? trimmed : `${trimmed}, USA`;
   const url =
     `https://nominatim.openstreetmap.org/search` +
-    `?q=${encodeURIComponent(trimmed)}&format=json&limit=1&countrycodes=us`;
+    `?q=${encodeURIComponent(query)}&format=json&limit=1&countrycodes=us`;
 
   const res = await fetch(url, {
     headers: { 'User-Agent': 'ArtOfLivingTeacherSearch/1.0' },

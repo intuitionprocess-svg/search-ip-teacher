@@ -31,8 +31,7 @@ function EmailIcon() {
 }
 
 export default function TeacherSearch() {
-  const [cityState, setCityState] = useState('');
-  const [zip, setZip] = useState('');
+  const [location, setLocation] = useState('');
   const [radius, setRadius] = useState(25);
   const [results, setResults] = useState<TeacherResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -41,12 +40,10 @@ export default function TeacherSearch() {
   const [isStateSearch, setIsStateSearch] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  const location = zip.trim() || cityState.trim();
-
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
-    if (!location) {
-      setError('Please enter a zip code or a city and state.');
+    if (!location.trim()) {
+      setError('Please enter a city, state, or zip code.');
       return;
     }
     setLoading(true);
@@ -86,44 +83,23 @@ export default function TeacherSearch() {
           className="bg-white rounded-2xl shadow-lg p-7 flex flex-col gap-5"
         >
           <div>
-            <label htmlFor="cityState" className="block text-sm font-semibold text-gray-700 mb-1">
-              City &amp; State
+            <label htmlFor="location" className="block text-sm font-semibold text-gray-700 mb-1">
+              Location
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
                 <MapPinIcon />
               </span>
               <input
-                id="cityState"
+                id="location"
                 type="text"
-                value={cityState}
-                onChange={(e) => setCityState(e.target.value)}
-                placeholder="e.g. Denver, CO"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="City, state, or zip — e.g. Chicago or TX or 80132"
                 className="w-full border border-gray-300 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
               />
             </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">or</span>
-            <div className="flex-1 h-px bg-gray-200" />
-          </div>
-
-          <div>
-            <label htmlFor="zip" className="block text-sm font-semibold text-gray-700 mb-1">
-              Zip Code
-            </label>
-            <input
-              id="zip"
-              type="text"
-              inputMode="numeric"
-              maxLength={5}
-              value={zip}
-              onChange={(e) => setZip(e.target.value.replace(/\D/g, ''))}
-              placeholder="e.g. 80132"
-              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-            />
+            <p className="mt-1.5 text-xs text-gray-400">Try: &ldquo;Columbus&rdquo;, &ldquo;Ohio&rdquo;, &ldquo;Columbus OH&rdquo;, or a zip code</p>
           </div>
 
           <div>
