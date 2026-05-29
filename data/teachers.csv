@@ -43,7 +43,7 @@ IP TTC Group,RTC,Timezone,First Name,Last Name,Phone,Email Id,City,State,Country
 3,Madhu,PST,Anjali,Pradeep Kumar,971-716-4581,anjali.pradeep@artofliving.org,Portland,OR,USA,97229
 2,Madhu,PST,Madhu,Rajanna,760-960-0862,madhu.rajanna@artofliving.org,Bellevue,WA,USA,98007
 4,Madhu,MST,Pranav Kumar,Suri,952-290-6787,Pranav.suri@artofliving.org,Boise,ID,USA,83716
-4,Madhu,PST,Nalini,Vardham,408-601-9881,nalini.vardham@artofliving.org,Pleasanton,CA,USA,94566
+4,Vanitha,PST,Nalini,Vardham,408-601-9881,nalini.vardham@artofliving.org,Pleasanton,CA,USA,94566
 4,Madhu,PST,Pavani,Yadlapati,3032506648,Pavani.yadlapati@artofliving.org,Seattle,WA,USA,98074
 3,Vanitha,PST,Shashirekha,Alur,408-464-1013,Rekha.alur@artofliving.org,West San Jose,CA,USA,95129
 2,Vanitha,PST,Aparna,Atmaram,408-515-2360,aparna.atmaram@artofliving.org,Fremont,CA,USA,94536
@@ -100,7 +100,7 @@ or
 2,Vaishnavi ,EST,Somya,Ramrakhyani,973-400-9191,somya.ramrakhyani@artofliving.org,Cocoa Beach,FL,USA,32931
 2,Vaishnavi ,EST,Marlene,Sandhu,703.790.6152,marlene.sandhu@artofliving.org,Falls Church,VA,USA,22043
 4,Vaishnavi ,EST,Sejal,Shah,909 645 7103,Sejal.shah@artofliving.org,Boone,NC,USA,28607
-1,,MST,Mona,Shah-Joshi,678-595-7248,madhurina@artofliving.org,Scottsdale,AZ,USA,30066
+1,Madhu,MST,Mona,Shah-Joshi,678-595-7248,madhurina@artofliving.org,Scottsdale,AZ,USA,30066
 3,Vaishnavi ,EST,Poornima,Sharma,503-724-7742,poornima.sharma@artofliving.org,Boone,NC,USA,28607
 2,Vaishnavi ,CST,Simi,Sharma Parashar,469-969-8771,simi.sharma@artofliving.org,Plano,TX,USA,75024
 3,Vaishnavi ,CST,Run,Singh,,runsingh@gmail.com,Uvalde,TX,USA,
